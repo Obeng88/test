@@ -171,15 +171,14 @@ chmod +x genera_scontrino.sh
 ## 4) Problema individuato
 
 **Problema:** utilizzo di un file `prodotti_default.csv` non aggiornato nella cassa.  
-Quando la connessione con il server centrale non è disponibile, la cassa entra in modalità offline e utilizza il file locale `prodotti_default.csv` come unica fonte dati per prezzi, IVA, stato attivo dei prodotti e altre informazioni di vendita.
+Quando la connessione con il server centrale non è disponibile, la cassa entra in modalità offline e utilizza il file locale `prodotti_default.csv` come unica fonte dati per prezzi, stato attivo dei prodotti e altre informazioni di vendita.
 
 Se questo file non è allineato con il database centrale, la cassa può operare con dati obsoleti.
 
 ### Può causare
 
 - **Errori di prezzo:** vendita di prodotti con importi non aggiornati.  
-- **Disallineamenti contabili:** differenze tra vendite registrate in cassa e dati presenti nel database centrale.  
-- **Problemi fiscali:** utilizzo di aliquote IVA non corrette.  
+- **Disallineamenti contabili:** differenze tra vendite registrate in cassa e dati presenti nel database centrale.    
 - **Vendita di prodotti disattivati:** articoli rimossi dal catalogo potrebbero risultare ancora disponibili.
 
 ### Rilevanza nel contesto
@@ -205,8 +204,7 @@ Lo script `ScriptCassa.sh` gestisce l’aggiornamento automatico del file `prodo
 - Scarica il catalogo aggiornato in formato CSV quando la connessione è attiva.  
 - Salva i dati ricevuti in un file temporaneo (`Temp_prodotti_default.csv`).  
 - Confronta il file temporaneo con quello attualmente in uso tramite `diff`.  
-- Sostituisce il file locale solo in presenza di differenze, utilizzando un aggiornamento atomico (`mv`).  
-- Registra l’esito dell’operazione nel log della cassa.
+- Sostituisce il file locale solo in presenza di differenze, utilizzando `cp` e `rm` .  
 
 ---
 
@@ -257,7 +255,7 @@ La protezione dei file critici è quindi una misura preventiva di sicurezza indi
 
 ### Sintesi dello script
 
-Lo script `ScriptPerms.sh` assicura che i file critici della cassa siano protetti da modifiche non autorizzate, verificando periodicamente esistenza e permessi.
+Lo script `ScriptPerms.sh` assicura che i file critici della cassa siano protetti da modifiche non autorizzate, verificando e impostando i permessi dei file.
 
 #### Funzionalità principali
 
@@ -291,13 +289,12 @@ Lo script `ScriptPerms.sh` assicura che i file critici della cassa siano protett
 
 3. **Ripristino automatico dei permessi**
 
-   Lo script può essere eseguito manualmente o pianificato tramite `cron`.
+   Lo script può essere eseguito oltre che all'inizio del ciclo di vita di una cassa.
 
    Se rileva permessi diversi da quelli previsti:
 
    - Ripristina automaticamente i permessi corretti.
    - Riporta il proprietario previsto.
-   - Può registrare l’evento nel file di log.
 
 ---
 
@@ -346,7 +343,7 @@ Il monitoraggio continuo aumenta l’affidabilità dell’infrastruttura e riduc
 
 Lo script `scriptControl.sh` implementa un sistema di monitoraggio periodico delle risorse critiche della cassa.
 
-Viene eseguito in background o tramite `cron` e controlla costantemente lo stato del sistema.
+Viene eseguito in background e controlla costantemente lo stato del sistema.
 
 ---
 
@@ -406,8 +403,7 @@ Lo script controlla se il processo dell’applicazione di cassa è in esecuzione
 
 Se il processo risulta assente:
 
-- Viene generato un messaggio di allerta  
-- L’evento può essere registrato nei log  
+- Viene generato un messaggio di allerta.
 
 ---
 
@@ -415,8 +411,7 @@ Se il processo risulta assente:
 
 Se uno o più controlli risultano negativi, lo script:
 
-- Invia un messaggio ai sistemisti (es. tramite mail o log centralizzato)  
-- Registra l’evento nel file di log della cassa  
+- Invia un messaggio ai sistemisti 
 
 Lo script opera in modo continuo o periodico senza interferire con le normali operazioni di vendita.
 
@@ -426,6 +421,10 @@ Lo script opera in modo continuo o periodico senza interferire con le normali op
 
 ```bash
 ./scriptControl.sh
+```
+oppure se si vuol fare andare lo script in background:
+```bash
+./scriptControl.sh &
 ```
 
 
