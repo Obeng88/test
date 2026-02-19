@@ -214,6 +214,7 @@ Lo script `ScriptCassa.sh` gestisce l’aggiornamento automatico del file `prodo
 
 ```bash
 ./ScriptCassa.sh
+```
 
 
 ## 5) Problema individuato
@@ -304,7 +305,7 @@ Lo script `ScriptPerms.sh` assicura che i file critici della cassa siano protett
 
 ```bash
 ./ScriptPerms.sh
-
+```
 
 ## 6) Problema individuato
 
@@ -425,7 +426,7 @@ Lo script opera in modo continuo o periodico senza interferire con le normali op
 
 ```bash
 ./scriptControl.sh
-
+```
 
 
 ## 7) Problema individuato
